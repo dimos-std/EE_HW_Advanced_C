@@ -92,6 +92,9 @@ void initSnake(snake_t *head, size_t size, int x, int y)
 
 /*
  Движение головы с учетом текущего направления движения
+ Реализовано циклическое движение во всех направлениях
+ Перенесена отрисовка головы в goTail(), происходит так как затирается голова при "гонке за хвостом"
+ и уменьшается размер кода
  */
 void go(struct snake_t *head)
 {
@@ -127,7 +130,10 @@ void go(struct snake_t *head)
         break;
     }
 }
-
+/*
+Функция изменения направления движения.
+Реализовано блокирование возможности движения в рекопротивоположном направлении
+*/
 void changeDirection(struct snake_t *snake, const int32_t key)
 {
 
@@ -155,6 +161,7 @@ void changeDirection(struct snake_t *snake, const int32_t key)
 
 /*
  Движение хвоста с учетом движения головы
+ дополнена отрисовкой головы
  */
 void goTail(struct snake_t *head)
 {
@@ -172,6 +179,9 @@ void goTail(struct snake_t *head)
     mvprintw(head->tail[0].y, head->tail[0].x, "%c", '@');
     refresh();
 }
+/*
+Проверка столкновения с хвостом
+*/
 int checkCollisions(struct snake_t *snake)
 {
     for (size_t i = 1; i <= snake->tsize; i++)
@@ -202,18 +212,18 @@ int main()
         key_pressed = getch(); // Считываем клавишу
         go(snake);
         goTail(snake);
-        // timeout(500); // Задержка при отрисовке
+        // обработка столкновения с хвостом
         if (checkCollisions(snake) == -1)
         {
             mvprintw(0, strlen(usage) + 10, "WASTED");
-            // nodelay(stdscr, FALSE);
             while (getch() != STOP_GAME)
             {
             }
             break;
         }
         changeDirection(snake, key_pressed);
-        while ((double)(clock() - begin) / CLOCKS_PER_SEC < DELAY)
+        // Задержка при отрисовке
+        while ((double)(clock() - begin) / CLOCKS_PER_SEC < DELAY) 
         {
         }
     }
