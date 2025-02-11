@@ -7,7 +7,7 @@
 #include <unistd.h>
 
 #define MIN_Y 2
-#define DELAY 0.1
+#define DELAY 0.3
 #define CONTROLS 3
 
 const char usage[] = "Use arrows for control. Press 'F10' for EXIT";
@@ -107,24 +107,24 @@ void go(struct snake_t *head)
     {
     case LEFT:
         if (head->x <= 0) // Циклическое движение, чтобы не уходить за пределы экрана
-            head->x = max_x;
+            head->x = max_x-1;
         else
             --(head->x);
         break;
     case RIGHT:
-        if (head->x >= max_x)
+        if (head->x >= max_x-1)
             head->x = 0;
         else
             ++(head->x);
         break;
     case UP:
         if (head->y <= MIN_Y)
-            head->y = max_y;
+            head->y = max_y-1;
         else
             --(head->y);
         break;
     case DOWN:
-        if (head->y >= max_y)
+        if (head->y >= max_y-1)
             head->y = MIN_Y;
         else
             ++(head->y);
@@ -251,6 +251,7 @@ int main()
             }
             break;
         }
+        mvprintw(0, strlen(usage) + 10, "y: %3d\tx: %3d", snake->y, snake->x);
 
         // if (checkDirection(snake, key_pressed))
         // проверка коректности изменения направления введена в changeDirection()
